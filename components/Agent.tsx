@@ -1,4 +1,8 @@
+"use client";
+
+import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useState } from "react";
 
 enum CallStatus {
   INACTIVE = "INACTIVE",
@@ -8,7 +12,13 @@ enum CallStatus {
 }
 
 const Agent = ({ userName, userId, type }: AgentProps) => {
+  const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
   const isSpeaking = true;
+  const messages = [
+    "Whats your name?",
+    "My name is John Doe, nice to meet you!",
+  ];
+  const lastMessage = messages[messages.length - 1];
 
   return (
     <>
@@ -39,22 +49,38 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
           </div>
         </div>
       </div>
+      {messages.length > 0 && (
+        <div className="transcript-border">
+          <div className="transcript">
+            <p
+              key={lastMessage}
+              className={cn(
+                "transition-opacity duration-500 opacity-0",
+                "animate-fadeIn opacity-100"
+              )}
+            >
+              {lastMessage}
+            </p>
+          </div>
+        </div>
+      )}
       <div className="w-full flex justify-center">
-        {CallStatus !== CallStatus.ACTIVE ? (
-            <button className="relative btn-call" onClick={() => handleCall()}>
+        {callStatus !== "ACTIVE" ? (
+          <button className="relative btn-call">
             <span
               className={cn(
                 "absolute animate-ping rounded-full opacity-75",
-                CallStatus !== "CONNECTING" && "hidden"
+                callStatus !== "CONNECTING" && "hidden"
               )}
             />
-
-            <span className="relative">
-              {CallStatus === "INACTIVE" || CallStatus === CallStatus.FINISHED
+            <span>
+              {callStatus === "INACTIVE" || callStatus === "FINISHED"
                 ? "Call"
                 : ". . ."}
             </span>
           </button>
+        ) : (
+          <button className="btn-disconnect">End</button>
         )}
       </div>
     </>
